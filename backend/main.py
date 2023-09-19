@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from methods.bisection import BisectionRootsParams, bisection_roots
-from methods.newton import newton_roots
+from methods.newton import NewtonRootsParams, newton_roots
 from methods.symbolic import SymbolicRootsParams, symbolic_roots
 
 app = FastAPI()
@@ -19,6 +19,6 @@ def get_bisection_roots(params: BisectionRootsParams):
 
 
 @app.post("/roots/newton")
-def get_newton_roots(params: BisectionRootsParams):
+def get_newton_roots(params: NewtonRootsParams):
     solution = newton_roots(params.expression, params.x0, params.tol, params.niter)
     return solution
