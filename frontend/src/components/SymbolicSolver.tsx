@@ -15,7 +15,6 @@ import {
 	FormDescription,
 	Form,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { SymbolicRootsParams, SymbolicRoots } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
