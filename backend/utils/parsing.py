@@ -1,12 +1,11 @@
 import re
 from typing import Union
+
 import sympy
-from typing import Any, List
-
-from typing_extensions import Annotated
-
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import Field
 from pydantic.functional_validators import AfterValidator
+from sympy.parsing.latex import parse_latex
+from typing_extensions import Annotated
 
 x = sympy.Symbol("x")
 
@@ -18,17 +17,13 @@ ALLOWED_ATOMS = [
     sympy.core.numbers.Rational,
     sympy.core.numbers.Number,
     sympy.core.numbers.Exp1,
-
-
     # Constants
     sympy.core.numbers.Pi,
-
     # Operators
     sympy.Abs,
     sympy.Add,
     sympy.Mul,
     sympy.Pow,
-
     # Symbols
     sympy.Symbol,
 ]
@@ -44,10 +39,10 @@ ALLOWED_FUNCTIONS = [
     sympy.log,
     sympy.ln,
     sympy.sqrt,
-    sympy.cbrt
+    sympy.cbrt,
 ]
 
-EXPRESSION_REGEX = r"^[a-zA-Z0-9\+\-\*\/\(\)\^\.\s]+$"
+EXPRESSION_REGEX = r"^[a-zA-Z0-9\+\-\*\/\(\)\^\.\s\{\}\\]+$"
 
 
 def check_expression_tree(expression: sympy.Expr) -> bool:
@@ -74,26 +69,39 @@ def check_expression_tree(expression: sympy.Expr) -> bool:
 # It would be great to implement a proper latex parser also...
 def parse_function_expression(expression: str) -> sympy.Expr:
     assert isinstance(expression, str), "Expression is not a string"
-    assert re.match(EXPRESSION_REGEX, expression), "Expression contains invalid characters"
+    assert re.match(
+        EXPRESSION_REGEX, expression
+    ), "Expression contains invalid characters"
 
     print(expression, type(expression))
     try:
-        parsed_expression = sympy.parse_expr(expression, evaluate=False)
+        parsed_expression = parse_latex(expression)
     except Exception as e:
         print(e)
         raise ValueError("Expression is not a valid Python expression")
-    
+
     assert isinstance(parsed_expression, sympy.Expr), "Expression is not a function"
-    assert len(parsed_expression.free_symbols) == 1, "Expression is not a function of x, it does not have one free symbol"
-    assert parsed_expression.free_symbols.pop() == sympy.Symbol("x"), "Expression is not a function of x"
-    assert check_expression_tree(parsed_expression), "Expression contains non-whitelisted functions"
+    assert (
+        len(parsed_expression.free_symbols) == 1
+    ), "Expression is not a function of x, it does not have one free symbol"
+    assert parsed_expression.free_symbols.pop() == sympy.Symbol(
+        "x"
+    ), "Expression is not a function of x"
+    assert check_expression_tree(
+        parsed_expression
+    ), "Expression contains non-whitelisted functions"
 
     return parsed_expression
+
 
 def to_latex(expression: Union[str, sympy.Expr]):
     if isinstance(expression, str):
         expression = parse_function_expression(expression)
     return sympy.latex(expression)
 
-    
-ExpressionAnnotation = Annotated[str, Field(..., description="A function expression in Python syntax, e.g. 'x**2 + 2'"), AfterValidator(parse_function_expression)]
+
+ExpressionAnnotation = Annotated[
+    str,
+    Field(..., description="A function expression in Python syntax, e.g. 'x**2 + 2'"),
+    AfterValidator(parse_function_expression),
+]

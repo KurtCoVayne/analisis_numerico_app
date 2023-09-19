@@ -10,7 +10,7 @@ export const HTTPValidationError = z
     .partial()
     
 export const BisectionRootsParams = z
-    .object({ expression: z.string(), a: z.number(), b: z.number(), tol: z.number(), niter: z.number().int() })
+    .object({ expression: z.string(), a: z.coerce.number(), b: z.coerce.number(), tol: z.coerce.number(), niter: z.coerce.number().int() })
     
 export const BisectionIteration = z
     .object({
