@@ -19,7 +19,7 @@ function Home() {
 	return (
 		<section className='container grid  items-center gap-6 pb-8 pt-6 md:py-10'>
 			<div className='w-100items-start gap-2'>
-				{/* <SymbolicRootSolver /> */}
+				<SymbolicRootSolver />
 			</div>
 			<div className='w-100 items-start gap-2'>
 				<BisectionRootSolver />
