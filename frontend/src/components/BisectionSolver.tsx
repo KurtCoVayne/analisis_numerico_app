@@ -14,7 +14,7 @@ import {
 	FormControl,
 	FormDescription,
 	Form,
-    FormMessage,
+	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { BisectionRootsParams, BisectionRoots } from '@/lib/types';
@@ -24,7 +24,23 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
 import { addStyles, EditableMathField, StaticMathField } from 'react-mathquill';
-import { Table, TableHead, TableRow, TableCell, TableBody, TableHeader, TableCaption } from './ui/table';
+import {
+	Table,
+	TableHead,
+	TableRow,
+	TableCell,
+	TableBody,
+	TableHeader,
+	TableCaption,
+} from './ui/table';
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from './ui/select';
 
 addStyles();
 
@@ -95,94 +111,137 @@ export function BisectionRootSolver() {
 													mathField.latex()
 												);
 											}}
-											style={{
-												fontSize: '1.5rem',
-												width: '100%',
-											}}
+											className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
 										/>
 									</FormControl>
 									<FormDescription>
-										Enter your mathematical expression in LaTeX format with respect to x
+										Enter your mathematical expression in
+										LaTeX format with respect to x
 									</FormDescription>
-                                    <FormMessage/>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						
+						<FormField
+							control={form.control}
+							name='error_type'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor={field.name}>
+										Error type
+									</FormLabel>
+									<Select
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+									>
+										<FormControl>
+											<SelectTrigger>
+												<SelectValue placeholder='Select an option' />
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											<SelectItem value='absolute'>
+												Absolute
+											</SelectItem>
+											<SelectItem value='relative'>
+												Relative
+											</SelectItem>
+										</SelectContent>
+									</Select>
+									<FormDescription>
+										Select the error type
+									</FormDescription>
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
 
-                        <FormField
-                            control={form.control}
-                            name='a'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel htmlFor={field.name}>
-                                        a
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input type="number" step="0.0000000001"  {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Left limit of the interval
-                                    </FormDescription>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name='b'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel htmlFor={field.name}>
-                                        b
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input type="number" step="0.0000000001"  {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Right limit of the interval
-                                    </FormDescription>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
+						<FormField
+							control={form.control}
+							name='a'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor={field.name}>
+										a
+									</FormLabel>
+									<FormControl>
+										<Input
+											type='number'
+											step='0.0000000001'
+											{...field}
+										/>
+									</FormControl>
+									<FormDescription>
+										Left limit of the interval
+									</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name='b'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor={field.name}>
+										b
+									</FormLabel>
+									<FormControl>
+										<Input
+											type='number'
+											step='0.0000000001'
+											{...field}
+										/>
+									</FormControl>
+									<FormDescription>
+										Right limit of the interval
+									</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-                        <FormField
-                            control={form.control}
-                            name='tol'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel htmlFor={field.name}>
-                                        Tolerance
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input type="number" step="0.0000000001" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Tolerance value
-                                    </FormDescription>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
+						<FormField
+							control={form.control}
+							name='tol'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor={field.name}>
+										Tolerance
+									</FormLabel>
+									<FormControl>
+										<Input
+											type='number'
+											step='0.0000000001'
+											{...field}
+										/>
+									</FormControl>
+									<FormDescription>
+										Tolerance value
+									</FormDescription>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
 
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name='niter'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel htmlFor={field.name}>
-                                        Max iterations
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input type="number" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Max number of iterations
-                                    </FormDescription>
-                                </FormItem>
-                            )}
-                        />
+						<FormField
+							control={form.control}
+							name='niter'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor={field.name}>
+										Max iterations
+									</FormLabel>
+									<FormControl>
+										<Input type='number' {...field} />
+									</FormControl>
+									<FormDescription>
+										Max number of iterations
+									</FormDescription>
+								</FormItem>
+							)}
+						/>
 						{solution && (
 							<div className='flex flex-col gap-2'>
 								<div className='flex flex-col gap-1'>
@@ -199,9 +258,7 @@ export function BisectionRootSolver() {
 								</div>
 								<div className=''>
 									<Table>
-                                        <TableCaption>
-                                            Iterations
-                                        </TableCaption>
+										<TableCaption>Iterations</TableCaption>
 										<TableHeader>
 											<TableRow>
 												<TableHead>Iteration</TableHead>

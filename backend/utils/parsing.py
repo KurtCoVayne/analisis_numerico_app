@@ -66,19 +66,27 @@ def check_expression_tree(expression: sympy.Expr) -> bool:
     return True
 
 
-# It would be great to implement a proper latex parser also...
 def parse_function_expression(expression: str) -> sympy.Expr:
+    """
+    This function parses a string containing a function expression in Latex syntax and returns a sympy expression.
+
+    Parameters
+    ==========
+    expression: A string containing a function expression in Latex syntax.
+    """
+
     assert isinstance(expression, str), "Expression is not a string"
     assert re.match(
         EXPRESSION_REGEX, expression
     ), "Expression contains invalid characters"
+    print(expression)
 
-    print(expression, type(expression))
     try:
         parsed_expression = parse_latex(expression)
+        parsed_expression = sympy.simplify(parsed_expression)
     except Exception as e:
         print(e)
-        raise ValueError("Expression is not a valid Python expression")
+        raise ValueError("Expression is not a valid Latex expression")
 
     assert isinstance(parsed_expression, sympy.Expr), "Expression is not a function"
     assert (
@@ -95,6 +103,10 @@ def parse_function_expression(expression: str) -> sympy.Expr:
 
 
 def to_latex(expression: Union[str, sympy.Expr]):
+    """
+    Convert a sympy expression to a Latex string.
+    """
+
     if isinstance(expression, str):
         expression = parse_function_expression(expression)
     return sympy.latex(expression)
@@ -102,6 +114,6 @@ def to_latex(expression: Union[str, sympy.Expr]):
 
 ExpressionAnnotation = Annotated[
     str,
-    Field(..., description="A function expression in Python syntax, e.g. 'x**2 + 2'"),
+    Field(..., description="A function expression in Latex syntax, e.g. 'x^{2} + 2'"),
     AfterValidator(parse_function_expression),
 ]

@@ -16,7 +16,6 @@ app.add_middleware(
 )
 
 
-# For root finder methods one good aditional parameter would be Error method (absolute,relative, etc)
 @app.post("/roots/symbolic")
 def get_symbolic_roots(params: SymbolicRootsParams) -> SymbolicRoots:
     solution = symbolic_roots(params.expression)
@@ -26,12 +25,19 @@ def get_symbolic_roots(params: SymbolicRootsParams) -> SymbolicRoots:
 @app.post("/roots/bisection")
 def get_bisection_roots(params: BisectionRootsParams) -> BisectionRoots:
     solution = bisection_roots(
-        params.expression, params.a, params.b, params.tol, params.niter
+        params.expression,
+        params.error_type,
+        params.a,
+        params.b,
+        params.tol,
+        params.niter,
     )
     return solution
 
 
 @app.post("/roots/newton")
 def get_newton_roots(params: NewtonRootsParams) -> NewtonRoots:
-    solution = newton_roots(params.expression, params.x0, params.tol, params.niter)
+    solution = newton_roots(
+        params.expression, params.error_type, params.x0, params.tol, params.niter
+    )
     return solution

@@ -4,6 +4,7 @@ import pandas as pd
 import sympy
 from pydantic import BaseModel
 
+from utils.errors import ErrorType, calculate_error
 from utils.parsing import ExpressionAnnotation, to_latex
 
 
@@ -24,6 +25,7 @@ class BisectionRoots(BaseModel):
 
 class BisectionRootsParams(BaseModel):
     expression: ExpressionAnnotation
+    error_type: ErrorType = ErrorType.ABSOLUTE
     a: float
     b: float
     tol: float
@@ -31,7 +33,7 @@ class BisectionRootsParams(BaseModel):
 
 
 def bisection_roots(
-    expr: sympy.Expr, a: float, b: float, tol: float, niter: int
+    expr: sympy.Expr, error_type: str, a: float, b: float, tol: float, niter: int
 ) -> BisectionRoots:
     """
         Find a root of a function using the bisection method, requires a function to be continuous in the interval [a, b] and f(a) * f(b) < 0.
@@ -85,7 +87,7 @@ def bisection_roots(
         xm_old = xm
         xm = (a + b) / 2
         fxm = f(xm)
-        error = abs(xm - xm_old)
+        error = calculate_error(xm, xm_old, error_type)
         iteration += 1
 
         it_data = {
