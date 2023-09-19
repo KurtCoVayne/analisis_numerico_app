@@ -72,13 +72,15 @@ def check_expression_tree(expression: sympy.Expr) -> bool:
 
 
 # It would be great to implement a proper latex parser also...
-def parse_function_expression(expression: str, parser=sympy.parse_expr) -> sympy.Expr:
+def parse_function_expression(expression: str) -> sympy.Expr:
     assert isinstance(expression, str), "Expression is not a string"
     assert re.match(EXPRESSION_REGEX, expression), "Expression contains invalid characters"
 
+    print(expression, type(expression))
     try:
-        parsed_expression = parser(expression, evaluate=False)
-    except Exception:
+        parsed_expression = sympy.parse_expr(expression, evaluate=False)
+    except Exception as e:
+        print(e)
         raise ValueError("Expression is not a valid Python expression")
     
     assert isinstance(parsed_expression, sympy.Expr), "Expression is not a function"
