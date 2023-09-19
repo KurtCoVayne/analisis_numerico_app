@@ -100,7 +100,7 @@ export function SymbolicRootSolver() {
 										/>
 									</FormControl>
 									<FormDescription>
-										Ingrese su expresión matematica en LaTeX
+										Enter your mathematical expression in LaTeX format with respect to x
 									</FormDescription>
 								</FormItem>
 							)}
@@ -108,13 +108,13 @@ export function SymbolicRootSolver() {
 						{solution && (
 							<div className='flex flex-col gap-2'>
 								<div className='flex flex-col gap-1'>
-									Expresion evaluada:{' '}
+									Evaluated Expression:{' '}
 									<StaticMathField>
 										{solution.expression}
 									</StaticMathField>
 								</div>
 								<div className='flex flex-col gap-1'>
-									Raices:{' '}
+									Roots:{' '}
 									<StaticMathField>
 										{solution.roots}
 									</StaticMathField>
@@ -131,9 +131,9 @@ export function SymbolicRootSolver() {
 								setSolution(null);
 							}}
 						>
-							Limpiar
+							Clear
 						</Button>
-						<Button type='submit'>Calcular</Button>
+						<Button type='submit'>Calculate</Button>
 					</CardFooter>
 				</form>
 			</Form>

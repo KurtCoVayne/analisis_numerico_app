@@ -1,5 +1,6 @@
 'use client';
 import BisectionRootSolver from '@/components/BisectionSolver';
+import NewtonRootSolver from '@/components/NewtonSolver';
 import SymbolicRootSolver from '@/components/SymbolicSolver';
 import * as React from 'react';
 
@@ -12,8 +13,8 @@ export function HomePage() {
 			<div className='w-100 items-start gap-2'>
 				<BisectionRootSolver />
 			</div>
-			<div className='flex flex-col items-start gap-2'>
-				{/* <CardWithForm /> */}
+			<div className='w-100 items-start gap-2'>
+				<NewtonRootSolver />
 			</div>
 		</section>
 	);

@@ -17,7 +17,7 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { BisectionRootsParams, BisectionRoots } from '@/lib/types';
+import { NewtonRootsParams, NewtonRoots } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -28,11 +28,11 @@ import { Table, TableHead, TableRow, TableCell, TableBody, TableHeader, TableCap
 
 addStyles();
 
-type ParamsType = z.infer<typeof BisectionRootsParams>;
-type ResultType = z.infer<typeof BisectionRoots>;
-const fetchBisectionRoots = async (params: ParamsType) => {
+type ParamsType = z.infer<typeof NewtonRootsParams>;
+type ResultType = z.infer<typeof NewtonRoots>;
+const fetchNewtonRoots = async (params: ParamsType) => {
 	const response = await fetch(
-		`${process.env.NEXT_PUBLIC_API_URL}/roots/bisection`,
+		`${process.env.NEXT_PUBLIC_API_URL}/roots/newton`,
 		{
 			method: 'POST',
 			body: JSON.stringify(params),
@@ -47,16 +47,16 @@ const fetchBisectionRoots = async (params: ParamsType) => {
 	const result: ResultType = await response.json();
 	return result;
 };
-export function BisectionRootSolver() {
+export function NewtonRootSolver() {
 	const form = useForm<ParamsType>({
-		resolver: zodResolver(BisectionRootsParams),
+		resolver: zodResolver(NewtonRootsParams),
 	});
 
 	const [solution, setSolution] = useState<ResultType | null>(null);
 
 	async function onSubmit(data: ParamsType) {
 		const fetchAndSet = async () => {
-			const result = await fetchBisectionRoots(data);
+			const result = await fetchNewtonRoots(data);
 			setSolution(result);
 		};
 		toast.promise(fetchAndSet(), {
@@ -71,9 +71,9 @@ export function BisectionRootSolver() {
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)}>
 					<CardHeader>
-						<CardTitle>Solve Bisection roots</CardTitle>
+						<CardTitle>Solve Newton roots</CardTitle>
 						<CardDescription>
-							Use Bisection math to solve roots of (almost) any
+							Use Newton math to solve roots of (almost) any
 							function.
 						</CardDescription>
 					</CardHeader>
@@ -111,41 +111,22 @@ export function BisectionRootSolver() {
 
                         <FormField
                             control={form.control}
-                            name='a'
+                            name='x0'
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel htmlFor={field.name}>
-                                        a
+                                        x0
                                     </FormLabel>
                                     <FormControl>
                                         <Input type="number" step="0.0000000001"  {...field} />
                                     </FormControl>
                                     <FormDescription>
-                                        Left limit of the interval
+                                        Initial Value
                                     </FormDescription>
                                     <FormMessage/>
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name='b'
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel htmlFor={field.name}>
-                                        b
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input type="number" step="0.0000000001"  {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Right limit of the interval
-                                    </FormDescription>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-
                         <FormField
                             control={form.control}
                             name='tol'
@@ -191,6 +172,12 @@ export function BisectionRootSolver() {
 										{solution.expression}
 									</StaticMathField>
 								</div>
+                                <div className='flex flex-col gap-1'>
+									Expression Derivative:{' '}
+									<StaticMathField>
+										{solution.derivative}
+									</StaticMathField>
+								</div>
 								<div className='flex flex-col gap-1'>
 									Raiz encontrada:{' '}
 									<StaticMathField>
@@ -207,23 +194,17 @@ export function BisectionRootSolver() {
 												<TableHead>Iteration</TableHead>
 												<TableHead>
 													<StaticMathField>
-														a
+														x
 													</StaticMathField>
 												</TableHead>
 												<TableHead>
 													<StaticMathField>
-														x_m
+														f(x)
 													</StaticMathField>
 												</TableHead>
 												<TableHead>
 													<StaticMathField>
-														b
-													</StaticMathField>
-												</TableHead>
-
-												<TableHead>
-													<StaticMathField>
-														f(xm)
+														f\prime(x)
 													</StaticMathField>
 												</TableHead>
 												<TableHead>
@@ -243,16 +224,13 @@ export function BisectionRootSolver() {
 															}
 														</TableCell>
 														<TableCell>
-															{iteration.a}
+															{iteration.x}
 														</TableCell>
 														<TableCell>
-															{iteration.xm}
+															{iteration.f_x}
 														</TableCell>
 														<TableCell>
-															{iteration.b}
-														</TableCell>
-														<TableCell>
-															{iteration.f_xm}
+															{iteration.f_prime_x}
 														</TableCell>
 														<TableCell>
 															{iteration.error}
@@ -285,4 +263,4 @@ export function BisectionRootSolver() {
 	);
 }
 
-export default BisectionRootSolver;
+export default NewtonRootSolver;

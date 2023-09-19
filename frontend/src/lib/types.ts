@@ -26,7 +26,7 @@ export const BisectionRoots = z
     .object({ expression: z.string(), root: z.number(), table: z.array(BisectionIteration) })
     
 export const NewtonRootsParams = z
-    .object({ expression: z.string(), x0: z.number(), tol: z.number(), niter: z.number().int() })
+    .object({ expression: z.string(), x0: z.coerce.number(), tol: z.coerce.number(), niter: z.coerce.number().int() })
     
 export const NewtonIteration = z
     .object({ iteration: z.number().int(), x: z.number(), f_x: z.number(), f_prime_x: z.number(), error: z.number() })

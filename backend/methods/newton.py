@@ -47,12 +47,12 @@ def newton_roots(expr: sympy.Expr, x0: float, tol: float, niter: int) -> NewtonR
     f: Callable[[float], float] = sympy.lambdify(x, expr, "numpy")
     f_prime: Callable[[float], float] = sympy.lambdify(x, expr_prime, "numpy")
 
-    data = []
     x_old = x0
     fx_old = f(x_old)
     fx_prime_old = f_prime(x_old)
     error = tol + 1
     iteration = 1
+    data = [{"iteration": 1, "x": x_old, "f_x": fx_old, "f_prime_x": fx_prime_old, "error": error}]
 
     while error > tol and fx_old != 0 and fx_prime_old != 0 and iteration < niter:
         x_new = x_old - fx_old / fx_prime_old
