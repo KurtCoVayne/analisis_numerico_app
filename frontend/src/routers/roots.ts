@@ -42,6 +42,13 @@ export async function bisectionRoots(
 		return HTTPValidationError.parse(json);
 	}
 
+	if (response.status >= 500) {
+		return MethodError.parse({
+			detail: 'Cannot compute roots',
+			error: 'Internal Server Error',
+		});
+	}
+
 	throw new Error(`Unexpected response status ${response.status}`);
 }
 
@@ -73,6 +80,13 @@ export async function symbolicRoots(
 		return HTTPValidationError.parse(json);
 	}
 
+	if (response.status >= 500) {
+		return MethodError.parse({
+			detail: 'Cannot compute roots',
+			error: 'Internal Server Error',
+		});
+	}
+
 	throw new Error(`Unexpected response status ${response.status}`);
 }
 
@@ -102,6 +116,13 @@ export async function newtonRoots(
 
 	if (response.status === 422) {
 		return HTTPValidationError.parse(json);
+	}
+
+	if (response.status >= 500) {
+		return MethodError.parse({
+			detail: 'Cannot compute roots',
+			error: 'Internal Server Error',
+		});
 	}
 
 	throw new Error(`Unexpected response status ${response.status}`);

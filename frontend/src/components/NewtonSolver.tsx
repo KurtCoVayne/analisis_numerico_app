@@ -61,7 +61,7 @@ export function NewtonRootSolver() {
 		
 		
 		if ('error' in result) {
-			toast.error(`${result.detail}: ${result.error ?? ''}`);
+			toast.error(`${result.detail}: ${result.error ?? 'Unknown reason'}`);
 			return;
 		}
 
