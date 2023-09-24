@@ -17,7 +17,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { NewtonRootsParams, NewtonRoots } from '@/lib/types';
+import { NewtonRootsParams, NewtonRoots, NewtonRootsParamsType, NewtonRootsType } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -40,45 +40,51 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from './ui/select';
+import { newtonRoots } from '@/routers/roots';
 
 addStyles();
 
-type ParamsType = z.infer<typeof NewtonRootsParams>;
-type ResultType = z.infer<typeof NewtonRoots>;
-const fetchNewtonRoots = async (params: ParamsType) => {
-	const response = await fetch(
-		`${process.env.NEXT_PUBLIC_API_URL}/roots/newton`,
-		{
-			method: 'POST',
-			body: JSON.stringify(params),
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		}
-	);
+type ParamsType = NewtonRootsParamsType;
 
-	if (!response.ok) throw new Error('The expression is not valid');
-
-	const result: ResultType = await response.json();
-	return result;
-};
 export function NewtonRootSolver() {
 	const form = useForm<ParamsType>({
 		resolver: zodResolver(NewtonRootsParams),
 	});
 
-	const [solution, setSolution] = useState<ResultType | null>(null);
+	const [solution, setSolution] = useState<NewtonRootsType | null>(null);
 
 	async function onSubmit(data: ParamsType) {
-		const fetchAndSet = async () => {
-			const result = await fetchNewtonRoots(data);
+		setSolution(null);
+		const toastId = toast.loading('Calculating...');
+		const result = await newtonRoots(data);
+		toast.dismiss(toastId);
+		
+		
+		if ('error' in result) {
+			toast.error(`${result.detail}: ${result.error ?? ''}`);
+			return;
+		}
+
+		if ('detail' in result) {
+			toast.error("Validation error");
+			if(!result.detail) return;
+			for (const error of result.detail) {
+				if(typeof error === 'string') continue;
+				if (error.loc.length === 0 || typeof error.loc[0] !== 'string') {
+					continue;
+				}
+				type ExpectedErrorType = Parameters<typeof form.setError>[0];
+				form.setError(error.loc[0] as ExpectedErrorType, {
+					type: 'manual',
+					message: error.msg,
+				});
+			}
+		}
+
+		if ('table' in result) {
+			toast.success('Solution found!');
 			setSolution(result);
-		};
-		toast.promise(fetchAndSet(), {
-			loading: 'Calculating...',
-			success: 'Success!',
-			error: 'The expression is not valid',
-		});
+		}
 	}
 
 	return (

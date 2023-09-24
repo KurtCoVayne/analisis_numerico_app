@@ -14,53 +14,59 @@ import {
 	FormControl,
 	FormDescription,
 	Form,
+	FormMessage,
 } from '@/components/ui/form';
-import { SymbolicRootsParams, SymbolicRoots } from '@/lib/types';
+import { SymbolicRootsParams, SymbolicRoots, SymbolicRootsType } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
 import { addStyles, EditableMathField, StaticMathField } from 'react-mathquill';
+import { symbolicRoots } from '@/routers/roots';
 
 addStyles();
 
 type ParamsType = z.infer<typeof SymbolicRootsParams>;
-type ResultType = z.infer<typeof SymbolicRoots>;
-const fetchSymbolicRoots = async (params: ParamsType) => {
-	const response = await fetch(
-		`${process.env.NEXT_PUBLIC_API_URL}/roots/symbolic`,
-		{
-			method: 'POST',
-			body: JSON.stringify(params),
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		}
-	);
 
-	if(!response.ok) throw new Error('The expression is not valid');
-
-	const result: ResultType = await response.json();
-	return result;
-};
 export function SymbolicRootSolver() {
 	const form = useForm<ParamsType>({
 		resolver: zodResolver(SymbolicRootsParams),
 	});
 
-	const [solution, setSolution] = useState<ResultType | null>(null);
+	const [solution, setSolution] = useState<SymbolicRootsType | null>(null);
 
 	async function onSubmit(data: ParamsType) {
-		const fetchAndSet = async () => {
-			const result = await fetchSymbolicRoots(data);
+		setSolution(null);
+		const toastId = toast.loading('Calculating...');
+		const result = await symbolicRoots(data);
+		toast.dismiss(toastId);
+		
+		if ('error' in result) {
+			toast.error(`${result.detail}: ${result.error ?? ''}`);
+			return;
+		}
+
+		if ('detail' in result) {
+			toast.error("Validation error");
+			if(!result.detail) return;
+			for (const error of result.detail) {
+				if(typeof error === 'string') continue;
+				if (error.loc.length < 2 || typeof error.loc[1] !== 'string') {
+					continue;
+				}
+				type ExpectedErrorType = Parameters<typeof form.setError>[0];
+				form.setError(error.loc[1] as ExpectedErrorType, {
+					type: 'manual',
+					message: error.msg,
+				});
+			}
+		}
+
+		if ('expression' in result) {
+			toast.success('Solution found!');
 			setSolution(result);
-		};
-		toast.promise(fetchAndSet(), {
-			loading: 'Calculating...',
-			success: 'Success!',
-			error: 'The expression is not valid',
-		});
+		}
 	}
 
 	return (
@@ -95,6 +101,7 @@ export function SymbolicRootSolver() {
 											className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
 										/>
 									</FormControl>
+									<FormMessage/>
 									<FormDescription>
 										Enter your mathematical expression in LaTeX format with respect to x
 									</FormDescription>

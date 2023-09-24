@@ -2,7 +2,7 @@ from typing import Callable, List, Tuple
 
 import pandas as pd
 import sympy
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from utils.errors import ErrorType, calculate_error
 from utils.parsing import ExpressionAnnotation, to_latex
@@ -28,8 +28,8 @@ class BisectionRootsParams(BaseModel):
     error_type: ErrorType = ErrorType.ABSOLUTE
     a: float
     b: float
-    tol: float
-    niter: int
+    tol: float = Field(..., gt=1e-21, le=1)
+    niter: int = Field(..., gt=0, le=100)
 
 
 def bisection_roots(
@@ -64,8 +64,7 @@ def bisection_roots(
     if fb == 0:
         return b
 
-    if fa * fb > 0:
-        raise ValueError("The function must change sign in the interval")
+    assert fa * fb < 0, "f(a) and f(b) must have different signs"
 
     xm = (a + b) / 2
     fxm: float = f(xm)

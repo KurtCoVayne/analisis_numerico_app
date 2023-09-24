@@ -1,8 +1,7 @@
 from typing import Callable, List, Tuple
 
-import pandas as pd
 import sympy
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from utils.errors import ErrorType, calculate_error
 from utils.parsing import ExpressionAnnotation, to_latex
@@ -27,8 +26,8 @@ class NewtonRootsParams(BaseModel):
     expression: ExpressionAnnotation
     error_type: ErrorType = ErrorType.ABSOLUTE
     x0: float
-    tol: float
-    niter: int
+    tol: float = Field(..., gt=1e-21, le=1)
+    niter: int = Field(..., gt=0, le=20)
 
 
 def newton_roots(

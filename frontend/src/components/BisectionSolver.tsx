@@ -17,7 +17,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { BisectionRootsParams, BisectionRoots } from '@/lib/types';
+import { BisectionRootsParams, BisectionRoots, BisectionRootsParamsType, MethodErrorType, ValidationErrorType, BisectionRootsType } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -41,45 +41,50 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from './ui/select';
+import { bisectionRoots } from '@/routers/roots';
 
 addStyles();
 
-type ParamsType = z.infer<typeof BisectionRootsParams>;
-type ResultType = z.infer<typeof BisectionRoots>;
-const fetchBisectionRoots = async (params: ParamsType) => {
-	const response = await fetch(
-		`${process.env.NEXT_PUBLIC_API_URL}/roots/bisection`,
-		{
-			method: 'POST',
-			body: JSON.stringify(params),
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		}
-	);
+type ParamsType = BisectionRootsParamsType;
 
-	if (!response.ok) throw new Error('The expression is not valid');
-
-	const result: ResultType = await response.json();
-	return result;
-};
 export function BisectionRootSolver() {
 	const form = useForm<ParamsType>({
 		resolver: zodResolver(BisectionRootsParams),
 	});
 
-	const [solution, setSolution] = useState<ResultType | null>(null);
+	const [solution, setSolution] = useState<BisectionRootsType | null>(null);
 
 	async function onSubmit(data: ParamsType) {
-		const fetchAndSet = async () => {
-			const result = await fetchBisectionRoots(data);
+		setSolution(null);
+		const toastId = toast.loading('Calculating...');
+		const result = await bisectionRoots(data);
+		toast.dismiss(toastId);
+		
+		if ('error' in result) {
+			toast.error(`${result.detail}: ${result.error ?? ''}`);
+			return;
+		}
+
+		if ('detail' in result) {
+			toast.error("Validation error");
+			if(!result.detail) return;
+			for (const error of result.detail) {
+				if(typeof error === 'string') continue;
+				if (error.loc.length === 0 || typeof error.loc[0] !== 'string') {
+					continue;
+				}
+				type ExpectedErrorType = Parameters<typeof form.setError>[0];
+				form.setError(error.loc[0] as ExpectedErrorType, {
+					type: 'manual',
+					message: error.msg,
+				});
+			}
+		}
+
+		if ('table' in result) {
+			toast.success('Solution found!');
 			setSolution(result);
-		};
-		toast.promise(fetchAndSet(), {
-			loading: 'Calculating...',
-			success: 'Success!',
-			error: 'The expression is not valid',
-		});
+		}
 	}
 
 	return (
