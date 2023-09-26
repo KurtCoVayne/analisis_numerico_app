@@ -27,7 +27,7 @@ class NewtonRootsParams(BaseModel):
     error_type: ErrorType = ErrorType.ABSOLUTE
     x0: float
     tol: float = Field(..., gt=1e-21, le=1)
-    niter: int = Field(..., gt=0, le=20)
+    niter: int = Field(..., gt=0, le=100)
 
 
 def newton_roots(

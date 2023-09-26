@@ -44,7 +44,7 @@ export const NewtonRootsParams = z.object({
 	error_type: ErrorType.optional().default('absolute'),
 	x0: z.coerce.number(),
 	tol: z.coerce.number().gt(1e-21).lte(1),
-	niter: z.coerce.number().int().gt(0).lte(20),
+	niter: z.coerce.number().int().gt(0).lte(100),
 });
 export const NewtonIteration = z.object({
 	iteration: z.number().int(),
