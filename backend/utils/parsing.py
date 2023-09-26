@@ -8,6 +8,8 @@ from sympy.parsing.latex import parse_latex
 from typing_extensions import Annotated
 
 x = sympy.Symbol("x")
+pi_symbol = sympy.Symbol("pi")
+e_symbol = sympy.Symbol("e")
 
 ALLOWED_ATOMS = [
     # Numbers
@@ -84,6 +86,8 @@ def parse_function_expression(expression: str) -> sympy.Expr:
     try:
         parsed_expression = parse_latex(expression)
         parsed_expression = sympy.simplify(parsed_expression)
+        parsed_expression = parsed_expression.subs(e_symbol, sympy.E)
+        parsed_expression = parsed_expression.subs(pi_symbol, sympy.pi)
     except Exception as e:
         print(e)
         raise ValueError("Expression is not a valid Latex expression")
