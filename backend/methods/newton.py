@@ -47,7 +47,7 @@ def newton_roots(
 
     x = sympy.symbols("x")
     expr_prime = expr.diff(x)
-    f: Callable[[float], float] = sympy.lambdify(x, expr, "numpy")
+    f: Callable[[float], float] = sympy.lambdify(x, expr, "numpy", docstring_limit=-1)
     f_prime: Callable[[float], float] = sympy.lambdify(x, expr_prime, "numpy")
 
     x_old = x0

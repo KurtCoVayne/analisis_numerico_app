@@ -53,7 +53,7 @@ def bisection_roots(
         A tuple containing the root and a pandas dataframe with the iterations data.
     """
     x = sympy.symbols("x")
-    f: Callable[[float], float] = sympy.lambdify(x, expr, "numpy")
+    f: Callable[[float], float] = sympy.lambdify(x, expr, "numpy", docstring_limit=-1)
 
     fa = f(a)
     fb = f(b)
