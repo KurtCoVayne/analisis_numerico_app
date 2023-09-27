@@ -85,7 +85,6 @@ def parse_function_expression(expression: str) -> sympy.Expr:
 
     try:
         parsed_expression = parse_latex(expression)
-        parsed_expression = sympy.simplify(parsed_expression)
         parsed_expression = parsed_expression.subs(e_symbol, sympy.E)
         parsed_expression = parsed_expression.subs(pi_symbol, sympy.pi)
     except Exception as e:
