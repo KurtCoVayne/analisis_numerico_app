@@ -1,6 +1,5 @@
 from typing import Callable, List, Tuple
 
-import pandas as pd
 import sympy
 from pydantic import BaseModel, Field
 
@@ -53,7 +52,7 @@ def bisection_roots(
         A tuple containing the root and a pandas dataframe with the iterations data.
     """
     x = sympy.symbols("x")
-    f: Callable[[float], float] = sympy.lambdify(x, expr, "numpy", docstring_limit=-1)
+    f: Callable[[float], float] = sympy.lambdify(x, expr, "math", docstring_limit=-1)
 
     fa = f(a)
     fb = f(b)
@@ -99,7 +98,7 @@ def bisection_roots(
         }
         data.append(it_data)
 
-    if error < tol:
+    if error < tol or fxm == 0:
         return BisectionRoots(root=xm, table=data, expression=to_latex(expr))
 
     if iteration == niter:

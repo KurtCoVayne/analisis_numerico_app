@@ -47,9 +47,8 @@ def newton_roots(
 
     x = sympy.symbols("x")
     expr_prime = expr.diff(x)
-    f: Callable[[float], float] = sympy.lambdify(x, expr, "numpy", docstring_limit=-1)
-    f_prime: Callable[[float], float] = sympy.lambdify(x, expr_prime, "numpy")
-
+    f: Callable[[float], float] = sympy.lambdify(x, expr, "math", docstring_limit=-1)
+    f_prime: Callable[[float], float] = sympy.lambdify(x, expr_prime, "math")
     x_old = x0
     fx_old = f(x_old)
     fx_prime_old = f_prime(x_old)
@@ -83,6 +82,7 @@ def newton_roots(
             "error": error,
         }
         data.append(it_data)
+
 
     if error < tol or fx_old == 0 or fx_prime_old == 0:
         return NewtonRoots(
