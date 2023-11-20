@@ -1,7 +1,18 @@
+from typing import List
 import numpy as np
-import pandas as pd
+from pydantic import BaseModel
 
-def Lagrange(x,y):
+class LagranParams(BaseModel):
+    x: List[float]
+    y: List[float]
+
+class LagranInt(BaseModel):
+    x: List[float]
+    y: List[float]
+    polys: List[str]
+    pol: str
+
+def Lagrange(x:List[float],y:List[float]):
     polys = []
 
     for i in range(len(x)):
@@ -25,5 +36,8 @@ def Lagrange(x,y):
         numjoin = "".join(num)
         denjoin = "".join(den)
         polys.append(numjoin + "/" + denjoin)
+        pol = []
+    for i in range(0,len(y)-1):
+        pol.append(str(y[i])+"*"+polys[i])
 
-    return pd.DataFrame(polys,columns = ["L_i(x)"])
+    return LagranInt(x=x,y=y,polys=polys, pol = "+".join(pol))
