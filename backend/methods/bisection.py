@@ -38,7 +38,7 @@ def bisection_roots(
         Find a root of a function using the bisection method, requires a function to be continuous in the interval [a, b] and f(a) * f(b) < 0.
 
         Parameters
-    ==========
+        ==========
 
         expr: A sympy expression representing the function.
         a: The left bound of the interval.

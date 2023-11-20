@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from routers import roots
+from routers import roots, interpolation
 
 app = FastAPI()
 app.add_middleware(
@@ -13,3 +12,4 @@ app.add_middleware(
 )
 
 app.include_router(roots.router)
+app.include_router(interpolation.router)
