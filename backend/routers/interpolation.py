@@ -5,7 +5,9 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from methods.spline import Spline, SplineParams, get_spline
-
+from methods.vandermonde import VanderInt, VanderParams, Vandermonde
+from methods.lagrange import LagranInt, LagranParams, Lagrange
+from methods.newton_int import NewtonInt, NewtonParams, NewtonInterpol
 
 router = APIRouter(
     prefix="/interpolation",
@@ -42,6 +44,81 @@ def get_splines(
     try:
         print(params)
         solution = get_spline(params.x, params.y, params.d)
+        return solution
+    except Exception as e:
+        return JSONResponse(
+            status_code=409,
+            content={
+                "detail": "Cannot find roots with the given parameters",
+                "error": str(e),
+            }
+        )
+@router.post(
+    "/Vandermonde",
+    response_model=VanderInt,
+    responses={
+        200: {
+            "model": VanderInt,
+        },
+        **responses,
+    },
+)
+def get_vandermonde(
+    params: VanderParams,
+) -> Union[VanderInt, JSONResponse]:
+    try:
+        print(params)
+        solution = Vandermonde(params.x, params.y)
+        return solution
+    except Exception as e:
+        return JSONResponse(
+            status_code=409,
+            content={
+                "detail": "Cannot find roots with the given parameters",
+                "error": str(e),
+            }
+        )
+@router.post(
+    "/Lagrange",
+    response_model=LagranInt,
+    responses={
+        200: {
+            "model": LagranInt,
+        },
+        **responses,
+    },
+)
+def get_lagrange(
+    params: LagranParams,
+) -> Union[LagranInt, JSONResponse]:
+    try:
+        print(params)
+        solution = Lagrange(params.x, params.y)
+        return solution
+    except Exception as e:
+        return JSONResponse(
+            status_code=409,
+            content={
+                "detail": "Cannot find roots with the given parameters",
+                "error": str(e),
+            }
+        )
+@router.post(
+    "/Newton",
+    response_model=NewtonInt,
+    responses={
+        200: {
+            "model": NewtonInt,
+        },
+        **responses,
+    },
+)
+def get_newton(
+    params: NewtonParams,
+) -> Union[NewtonInt, JSONResponse]:
+    try:
+        print(params)
+        solution = NewtonInterpol(params.x, params.y)
         return solution
     except Exception as e:
         return JSONResponse(
