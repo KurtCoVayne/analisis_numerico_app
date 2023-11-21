@@ -17,7 +17,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { NewtonRootsParams, NewtonRoots, NewtonRootsParamsType, NewtonRootsType } from '@/lib/types';
+import { NewtonRootsParams, NewtonRoots, NewtonRootsParamsType, NewtonRootsType, ValidationErrorType } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -68,7 +68,7 @@ export function NewtonRootSolver() {
 		if ('detail' in result) {
 			toast.error("Validation error");
 			if(!result.detail) return;
-			for (const error of result.detail) {
+			for (const error of (result.detail as ValidationErrorType[])) {
 				if(typeof error === 'string') continue;
 				if (error.loc.length === 0 || typeof error.loc[0] !== 'string') {
 					continue;
