@@ -1,6 +1,7 @@
 'use client';
-import FalsePositionSolver from '@/components/FalsePositionSolver';
-import FixedPointRootSolver from '@/components/FixedPointSolver';
+// import FalsePositionSolver from '@/components/FalsePositionSolver';
+// import FixedPointRootSolver from '@/components/FixedPointSolver';
+// import SecantRootSolver from '@/components/SecantSolver';
 import dynamic from 'next/dynamic';
 const SymbolicRootSolver = dynamic(
 	() => import('@/components/SymbolicSolver'),
@@ -12,6 +13,21 @@ const BisectionRootSolver = dynamic(
 );
 const NewtonRootSolver = dynamic(
 	() => import('@/components/NewtonSolver'),
+	{ ssr: false }
+);
+
+const FixedPointRootSolver = dynamic(
+	() => import('@/components/FixedPointSolver'),
+	{ ssr: false }
+);
+
+const FalsePositionSolver = dynamic(
+	() => import('@/components/FalsePositionSolver'),
+	{ ssr: false }
+);
+
+const SecantRootSolver = dynamic(
+	() => import('@/components/SecantSolver'),
 	{ ssr: false }
 );
 
@@ -35,6 +51,10 @@ function Home() {
 			<div className='w-100 items-start gap-2'>
 				<FalsePositionSolver />
 			</div>
+			<div className='w-100 items-start gap-2'>
+				<SecantRootSolver />
+			</div>
+
 		</section>
 	);
 }
