@@ -68,7 +68,7 @@ export function FixedPointRootSolver() {
 		if ('detail' in result) {
 			toast.error("Validation error");
 			if(!result.detail) return;
-			for (const error of result.detail) {
+			for (const error of (result.detail as ValidationErrorType[])) {
 				if(typeof error === 'string') continue;
 				if (error.loc.length === 0 || typeof error.loc[0] !== 'string') {
 					continue;
