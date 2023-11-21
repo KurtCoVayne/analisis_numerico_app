@@ -4,7 +4,8 @@ import numpy as np
 from pydantic import BaseModel, Field
 
 
-class JacobiParams(BaseModel):
+# Clases y estructuras
+class GaussSeidelParams(BaseModel):
     matrix_a: List[List[float]]
     vector_b: List[float]
     x0: List[float]
@@ -12,22 +13,22 @@ class JacobiParams(BaseModel):
     niter: int = Field(..., gt=0, le=100)
 
 
-class JacobiIteration(BaseModel):
+class GaussSeidelIteration(BaseModel):
     step: int
     x: List[float]
     error: float
 
 
-class JacobiResult(BaseModel):
+class GaussSeidelResult(BaseModel):
     transition_matrix: List[List[float]]
     coefficient_matrix: List[List[float]]
     spectral_radius: float
-    iterations: List[JacobiIteration]
+    iterations: List[GaussSeidelIteration]
     converges: bool
 
 
-# Método de Jacobi adaptado
-def jacobi_method(params: JacobiParams) -> JacobiResult:
+# Método de Gauss-Seidel adaptado
+def gauss_seidel_method(params: GaussSeidelParams) -> GaussSeidelResult:
     A = np.array(params.matrix_a)
     b = np.array(params.vector_b).reshape((-1, 1))
     x0 = np.array(params.x0).reshape((-1, 1))
@@ -35,8 +36,8 @@ def jacobi_method(params: JacobiParams) -> JacobiResult:
     D = np.diag(np.diag(A))
     L = -1 * np.tril(A) + D
     U = -1 * np.triu(A) + D
-    T = np.linalg.inv(D) @ (L + U)
-    C = np.linalg.inv(D) @ b
+    T = np.linalg.inv(D - L) @ U
+    C = np.linalg.inv(D - L) @ b
 
     spectral_radius = max(abs(np.linalg.eigvals(T)))
     converges = spectral_radius < 1
@@ -48,11 +49,13 @@ def jacobi_method(params: JacobiParams) -> JacobiResult:
         error = np.linalg.norm(xP - xA)
         xP = xA
 
-        iterations.append(JacobiIteration(step=i, x=xA.flatten().tolist(), error=error))
+        iterations.append(
+            GaussSeidelIteration(step=i, x=xA.flatten().tolist(), error=error)
+        )
         if error < params.tol:
             break
 
-    return JacobiResult(
+    return GaussSeidelResult(
         transition_matrix=T.tolist(),
         coefficient_matrix=C.tolist(),
         spectral_radius=spectral_radius,

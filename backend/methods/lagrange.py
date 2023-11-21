@@ -1,10 +1,13 @@
 from typing import List
+
 import numpy as np
 from pydantic import BaseModel
+
 
 class LagranParams(BaseModel):
     x: List[float]
     y: List[float]
+
 
 class LagranInt(BaseModel):
     x: List[float]
@@ -12,7 +15,8 @@ class LagranInt(BaseModel):
     polys: List[str]
     pol: str
 
-def Lagrange(x:List[float],y:List[float]):
+
+def Lagrange(x: List[float], y: List[float]):
     polys = []
 
     for i in range(len(x)):
@@ -37,7 +41,7 @@ def Lagrange(x:List[float],y:List[float]):
         denjoin = "".join(den)
         polys.append(numjoin + "/" + denjoin)
         pol = []
-    for i in range(0,len(y)-1):
-        pol.append(str(y[i])+"*"+polys[i])
+    for i in range(0, len(y) - 1):
+        pol.append(str(y[i]) + "*" + polys[i])
 
-    return LagranInt(x=x,y=y,polys=polys, pol = "+".join(pol))
+    return LagranInt(x=x, y=y, polys=polys, pol="+".join(pol))

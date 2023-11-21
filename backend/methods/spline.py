@@ -1,7 +1,9 @@
 from enum import Enum
 from typing import List
+
 import numpy as np
 from pydantic import BaseModel
+
 
 class SplineType(str, Enum):
     LINEAR = "linear"
@@ -14,11 +16,13 @@ class SplineParams(BaseModel):
     y: List[float]
     d: SplineType = SplineType.LINEAR
 
+
 class Spline(BaseModel):
     x: List[float]
     y: List[float]
     d: SplineType = SplineType.LINEAR
     coefficients: List[List[float]]
+
 
 D_VALUES = {
     "linear": 1,
@@ -26,7 +30,10 @@ D_VALUES = {
     "cubic": 3,
 }
 
-def get_spline(x: List[float], y: List[float], spline_type: SplineType = SplineType.LINEAR) -> Spline:
+
+def get_spline(
+    x: List[float], y: List[float], spline_type: SplineType = SplineType.LINEAR
+) -> Spline:
     n = len(x)
     d = D_VALUES[spline_type.value]
     A = np.zeros(((d + 1) * (n - 1), (d + 1) * (n - 1)))
@@ -38,36 +45,24 @@ def get_spline(x: List[float], y: List[float], spline_type: SplineType = SplineT
         A, b = construct_linear_spline(x, y, n, A, b)
         val = np.linalg.inv(A).dot(b)
         tabla = np.reshape(val, (n - 1, d + 1))
-        return Spline(
-            x=x,
-            y=y,
-            d=spline_type,
-            coefficients=tabla.tolist()
-        )
+        return Spline(x=x, y=y, d=spline_type, coefficients=tabla.tolist())
 
     elif spline_type == SplineType.QUADRATIC:  # Quadratic
         A, b = construct_quadratic_spline(x, y, n, A, b, cua)
         val = np.linalg.inv(A).dot(b)
         tabla = np.reshape(val, (n - 1, d + 1))
-        return Spline(
-            x=x,
-            y=y,
-            d=spline_type,
-            coefficients=tabla.tolist()
-        )
-    
+        return Spline(x=x, y=y, d=spline_type, coefficients=tabla.tolist())
+
     elif spline_type == SplineType.CUBIC:
         A, b = construct_cubic_spline(x, y, n, A, b, cua, cub)
         val = np.linalg.inv(A).dot(b)
         tabla = np.reshape(val, (n - 1, d + 1))
-        return Spline(
-            x=x,
-            y=y,
-            d=spline_type,
-            coefficients=tabla.tolist()
-        )
+        return Spline(x=x, y=y, d=spline_type, coefficients=tabla.tolist())
 
-def construct_linear_spline(x: List[float], y: List[float], n: int, A: np.ndarray, b: np.ndarray):
+
+def construct_linear_spline(
+    x: List[float], y: List[float], n: int, A: np.ndarray, b: np.ndarray
+):
     c = 0
     h = 0
     for i in range(0, n - 1):
@@ -87,7 +82,15 @@ def construct_linear_spline(x: List[float], y: List[float], n: int, A: np.ndarra
 
     return A, b
 
-def construct_quadratic_spline(x: List[float], y: List[float], n: int, A: np.ndarray, b: np.ndarray, cua: np.ndarray):
+
+def construct_quadratic_spline(
+    x: List[float],
+    y: List[float],
+    n: int,
+    A: np.ndarray,
+    b: np.ndarray,
+    cua: np.ndarray,
+):
     c = 0
     h = 0
     for i in range(0, n - 1):
@@ -122,7 +125,16 @@ def construct_quadratic_spline(x: List[float], y: List[float], n: int, A: np.nda
 
     return A, b
 
-def construct_cubic_spline(x: List[float], y: List[float], n: int, A: np.ndarray, b: np.ndarray, cua: np.ndarray, cub: np.ndarray):
+
+def construct_cubic_spline(
+    x: List[float],
+    y: List[float],
+    n: int,
+    A: np.ndarray,
+    b: np.ndarray,
+    cua: np.ndarray,
+    cub: np.ndarray,
+):
     c = 0
     h = 0
     for i in range(0, n - 1):

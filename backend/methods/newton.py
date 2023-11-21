@@ -25,13 +25,14 @@ class NewtonRoots(BaseModel):
 class NewtonRootsParams(BaseModel):
     expression: ExpressionAnnotation
     error_type: ErrorType = ErrorType.ABSOLUTE
+    multiple_roots: bool = False
     x0: float
     tol: float = Field(..., gt=1e-21, le=1)
     niter: int = Field(..., gt=0, le=100)
 
 
 def newton_roots(
-    expr: sympy.Expr, error_type: str, x0: float, tol: float, niter: int
+    expr: sympy.Expr, error_type: str, multiple_roots: bool, x0: float, tol: float, niter: int
 ) -> NewtonRoots:
     """
     Find a root of a function using the Newton-Raphson method, requires a function to be continuous in the interval [a, b] and f(a) * f(b) < 0.
@@ -47,8 +48,14 @@ def newton_roots(
 
     x = sympy.symbols("x")
     expr_prime = expr.diff(x)
+    expr_prime2 = expr_prime.diff(x, 2)
     f: Callable[[float], float] = sympy.lambdify(x, expr, "math", docstring_limit=-1)
     f_prime: Callable[[float], float] = sympy.lambdify(x, expr_prime, "math")
+
+    if multiple_roots:
+        f = lambda x: f(x) / f_prime(x)
+        f_prime = sympy.lambdify(x, expr_prime2, "math")
+
     x_old = x0
     fx_old = f(x_old)
     fx_prime_old = f_prime(x_old)
@@ -83,13 +90,14 @@ def newton_roots(
         }
         data.append(it_data)
 
-
     if error < tol or fx_old == 0 or fx_prime_old == 0:
         return NewtonRoots(
+            multiple_roots=multiple_roots,
             derivative=to_latex(expr_prime),
+            second_derivative=to_latex(expr_prime2),
             root=x_new,
             table=data,
-            expression=to_latex(expr),
+            expression=to_latex((expr/expr_prime) if multiple_roots else expr),
         )
 
     raise ValueError(f"Failed after {niter} iterations")

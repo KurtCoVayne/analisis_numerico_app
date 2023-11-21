@@ -3,15 +3,14 @@ from typing import Optional, Union
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from methods.punto_fijo import FixedPointParams, FixedPointRoots, fixed_point_roots
 
 from methods.bisection import (BisectionRoots, BisectionRootsParams,
                                bisection_roots)
 from methods.newton import NewtonRoots, NewtonRootsParams, newton_roots
-from methods.punto_fijo import (FixedPointParams, FixedPointRoots,
-                                fixed_point_roots)
-from methods.regla_falsa import FalseRuleParams, FalseRuleRoots, ReglaFalsa
-from methods.secante import Secante, SecanteParams, SecanteRoots
 from methods.symbolic import SymbolicRoots, SymbolicRootsParams, symbolic_roots
+from methods.regla_falsa import FalseRuleRoots, FalseRuleParams, ReglaFalsa
+from methods.secante import SecanteRoots, SecanteParams, Secante
 
 router = APIRouter(
     prefix="/roots",
@@ -54,7 +53,7 @@ def get_symbolic_roots(
             content={
                 "detail": "Cannot find roots with the given parameters",
                 "error": str(e),
-            },
+            }
         )
 
 
@@ -89,7 +88,7 @@ def get_bisection_roots(
             content={
                 "detail": "Cannot find roots with the given parameters",
                 "error": str(e),
-            },
+            }
         )
     except Exception as e:
         return JSONResponse(
@@ -124,7 +123,6 @@ def get_newton_roots(params: NewtonRootsParams) -> NewtonRoots:
             },
         )
 
-
 @router.post(
     "/fixed_point",
     response_model=FixedPointRoots,
@@ -135,13 +133,9 @@ def get_newton_roots(params: NewtonRootsParams) -> NewtonRoots:
 )
 def get_fixed_point_params(params: FixedPointParams) -> FixedPointRoots:
     try:
+
         solution = fixed_point_roots(
-            params.f_expr,
-            params.g_expr,
-            params.x0,
-            params.error_type,
-            params.tol,
-            params.niter,
+            params.f_expr, params.g_expr, params.x0, params.error_type, params.tol, params.niter
         )
         return solution
     except Exception as e:
@@ -152,8 +146,6 @@ def get_fixed_point_params(params: FixedPointParams) -> FixedPointRoots:
                 "error": str(e),
             },
         )
-
-
 @router.post(
     "/false_rule",
     response_model=FalseRuleRoots,
@@ -165,12 +157,7 @@ def get_fixed_point_params(params: FixedPointParams) -> FixedPointRoots:
 def get_false_rule_params(params: FalseRuleParams) -> FalseRuleRoots:
     try:
         solution = ReglaFalsa(
-            params.f_expr,
-            params.xl,
-            params.xu,
-            params.tol,
-            params.niter,
-            params.error_type,
+            params.f_expr, params.xl, params.xu, params.tol, params.niter, params.error_type
         )
         return solution
     except Exception as e:
@@ -181,8 +168,6 @@ def get_false_rule_params(params: FalseRuleParams) -> FalseRuleRoots:
                 "error": str(e),
             },
         )
-
-
 @router.post(
     "/Secant",
     response_model=SecanteRoots,
@@ -194,12 +179,7 @@ def get_false_rule_params(params: FalseRuleParams) -> FalseRuleRoots:
 def get_Secant_params(params: SecanteParams) -> SecanteRoots:
     try:
         solution = Secante(
-            params.f_expr,
-            params.x0,
-            params.x1,
-            params.niter,
-            params.tol,
-            params.error_type,
+            params.f_expr, params.x0, params.x1, params.niter, params.tol, params.error_type
         )
         return solution
     except Exception as e:

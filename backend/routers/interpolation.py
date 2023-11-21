@@ -4,10 +4,10 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
+from methods.lagrange import Lagrange, LagranInt, LagranParams
+from methods.newton_int import NewtonInt, NewtonInterpol, NewtonParams
 from methods.spline import Spline, SplineParams, get_spline
-from methods.vandermonde import VanderInt, VanderParams, Vandermonde
-from methods.lagrange import LagranInt, LagranParams, Lagrange
-from methods.newton_int import NewtonInt, NewtonParams, NewtonInterpol
+from methods.vandermonde import VanderInt, Vandermonde, VanderParams
 
 router = APIRouter(
     prefix="/interpolation",
@@ -51,8 +51,10 @@ def get_splines(
             content={
                 "detail": "Cannot find roots with the given parameters",
                 "error": str(e),
-            }
+            },
         )
+
+
 @router.post(
     "/Vandermonde",
     response_model=VanderInt,
@@ -76,10 +78,12 @@ def get_vandermonde(
             content={
                 "detail": "Cannot find roots with the given parameters",
                 "error": str(e),
-            }
+            },
         )
+
+
 @router.post(
-    "/Lagrange",
+    "/lagrange",
     response_model=LagranInt,
     responses={
         200: {
@@ -101,10 +105,12 @@ def get_lagrange(
             content={
                 "detail": "Cannot find roots with the given parameters",
                 "error": str(e),
-            }
+            },
         )
+
+
 @router.post(
-    "/Newton",
+    "/newton",
     response_model=NewtonInt,
     responses={
         200: {
@@ -113,7 +119,7 @@ def get_lagrange(
         **responses,
     },
 )
-def get_newton(
+def get_newton_interpolation(
     params: NewtonParams,
 ) -> Union[NewtonInt, JSONResponse]:
     try:
@@ -126,5 +132,5 @@ def get_newton(
             content={
                 "detail": "Cannot find roots with the given parameters",
                 "error": str(e),
-            }
+            },
         )

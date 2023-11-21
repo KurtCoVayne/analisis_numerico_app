@@ -35,21 +35,21 @@ def bisection_roots(
     expr: sympy.Expr, error_type: str, a: float, b: float, tol: float, niter: int
 ) -> BisectionRoots:
     """
-        Find a root of a function using the bisection method, requires a function to be continuous in the interval [a, b] and f(a) * f(b) < 0.
+    Find a root of a function using the bisection method, requires a function to be continuous in the interval [a, b] and f(a) * f(b) < 0.
 
-        Parameters
-        ==========
+    Parameters
+    ==========
 
-        expr: A sympy expression representing the function.
-        a: The left bound of the interval.
-        b: The right bound of the interval.
-        tol: The tolerance of the method.
-        niter: The maximum number of iterations.
+    expr: A sympy expression representing the function.
+    a: The left bound of the interval.
+    b: The right bound of the interval.
+    tol: The tolerance of the method.
+    niter: The maximum number of iterations.
 
-        Returns
-        =======
+    Returns
+    =======
 
-        A tuple containing the root and a pandas dataframe with the iterations data.
+    A tuple containing the root and a pandas dataframe with the iterations data.
     """
     x = sympy.symbols("x")
     f: Callable[[float], float] = sympy.lambdify(x, expr, "math", docstring_limit=-1)
