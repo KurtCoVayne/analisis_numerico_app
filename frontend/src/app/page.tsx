@@ -1,4 +1,6 @@
 'use client';
+import FalsePositionSolver from '@/components/FalsePositionSolver';
+import FixedPointRootSolver from '@/components/FixedPointSolver';
 import dynamic from 'next/dynamic';
 const SymbolicRootSolver = dynamic(
 	() => import('@/components/SymbolicSolver'),
@@ -26,6 +28,12 @@ function Home() {
 			</div>
 			<div className='w-100 items-start gap-2'>
 				<NewtonRootSolver />
+			</div>
+			<div className='w-100 items-start gap-2'>
+				<FixedPointRootSolver />
+			</div>
+			<div className='w-100 items-start gap-2'>
+				<FalsePositionSolver />
 			</div>
 		</section>
 	);
